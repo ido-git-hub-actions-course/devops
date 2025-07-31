@@ -1,0 +1,34 @@
+name: Clone and Update Repository
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  update-repo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set environment variables
+        run: |
+          echo "ORGANIZATION_NAME=ido-git-hub-actions-course" >> $GITHUB_ENV
+          echo "REPOSITORY=corse-code" >> $GITHUB_ENV
+          echo "TARGET_BRANCH=main" >> $GITHUB_ENV
+          echo "TARGET_REPO=https://x-access-token:${{ secrets.TOKEN }}@github.com/ido-git-hub-actions-course/corse-code.git" >> $GITHUB_ENV
+
+      - name: Clone the target repository
+        run: |
+          git clone --branch "$TARGET_BRANCH" "$TARGET_REPO" target-repo
+
+      - name: Add a new file to the repository
+        run: |
+          echo "This is a new file added via GitHub Actions." > target-repo/newfile.txt
+
+      - name: Commit and push changes
+        working-directory: target-repo
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+          git add newfile.txt
+          git commit -m "Add new file via GitHub Actions" || echo "No changes to commit"
+          git push origin "$TARGET_BRANCH"
