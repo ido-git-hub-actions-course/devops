@@ -1,0 +1,14 @@
+---
+- name: Ensure Docker is installed
+  hosts: server3
+  become: true
+  gather_facts: true
+  vars_files:
+    - ~/playbooks/data/users.yml
+
+  tasks:
+    - name: create groups
+      group:
+        name: "{{ item.key }}"
+        state: present
+      loop: "{{ lookup('dict', users) }}"
